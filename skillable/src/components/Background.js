@@ -83,37 +83,14 @@ const Background = () => {
         alt="star"
         style={{
           position: "absolute",
-          top: "45%",
+          top: "25%",
           left: "45%",
           width: "220px",
           height: "220px",
           opacity: 0.2,
         }}
       />
-      <img
-        src={star}
-        alt="star"
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "160px",
-          height: "160px",
-        }}
-      />
-      <img
-        src={star}
-        alt="star"
-        style={{
-          position: "absolute",
-          top: "52%",
-          left: "40%",
-          width: "120px",
-          height: "120px",
-          opacity: 0.4,
-        }}
-      />
+      
 
       {/* New: Star to the left of center */}
       <img
@@ -121,8 +98,8 @@ const Background = () => {
         alt="star"
         style={{
           position: "absolute",
-          top: "48%",
-          left: "25%", // left of center but not at the edge
+          top: "38%",
+          left: "15%", // left of center but not at the edge
           width: "280px",
           height: "280px",
           opacity: 0.6,

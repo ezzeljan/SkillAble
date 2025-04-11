@@ -27,6 +27,7 @@
   margin: 0;
   gap: 2rem;
   justify-self: center;
+  font-family: Poppins, sans-serifArial;
 }
 
 .navbar-right {
