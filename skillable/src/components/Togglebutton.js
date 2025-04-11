@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
-import "./Login.css"; // Make sure to include the CSS for the toggle
+import "./login-register/Login"; // Make sure to include the CSS for the toggle
 
 function ToggleButton({ isLoginPage = false }) {
   const [isToggled, setIsToggled] = useState(isLoginPage);
