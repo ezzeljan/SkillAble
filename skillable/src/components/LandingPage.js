@@ -12,8 +12,11 @@ import yellow from '../assets/yellow.png';
 import kids from '../assets/last.png';
 import sparkle from '../assets/sparkle.png';
 import './LandingPage.css';
+import { useNavigate } from "react-router-dom";
+
 
 function LandingPage() {
+  const navigate = useNavigate();
   
   return (
     <div
@@ -137,8 +140,12 @@ function LandingPage() {
               Learning everyday tasks can be a challenge — we’re here to make it easier and more fun.
             </Typography>
 
-            <button className="landingbutton" style={{ marginTop: "20px" }}>
-              Start learning today
+            <button 
+              className="landingbutton" 
+              style={{ marginTop: "20px" }}
+              onClick={() => navigate("/register")}
+            >
+                Start learning today
             </button>
           </div>
         </section>
@@ -331,7 +338,11 @@ function LandingPage() {
             >
               Help your students build the confidence they need to take on everyday challenges and develop the life skills that foster true independence. Join us in creating a supportive, empowering environment where SPED students can thrive—at their own pace, in their own way.
             </Typography>
-            <button className="landingbutton" style={{ marginTop: "40px" }}>
+            <button 
+              className="landingbutton" 
+              style={{ marginTop: "40px" }}
+              onClick={() => navigate("/register")}
+            >
               Sign up
             </button>
           </div>
