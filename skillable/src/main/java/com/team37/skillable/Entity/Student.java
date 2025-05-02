@@ -2,40 +2,25 @@ package com.team37.skillable.Entity;
 
 import jakarta.persistence.*;
 import java.util.List;
+import lombok.Setter;
+import lombok.Getter;
 
 @Entity
-public class Student {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Setter
+@Getter
+@Table(name = "student")
+public class Student extends UserEntity {
+    // Remove the @Id and @GeneratedValue here
 
-    private String name;
+    private String firstName;
+    private String lastName;
+    private int age;
 
-    @OneToMany(mappedBy = "student")
-    private List<Progress> progressList;
+    @ManyToOne
+    @JoinColumn(name = "teacher_id")
+    private Teacher teacher;
 
-    // Getters and setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<Progress> getProgressList() {
-        return progressList;
-    }
-
-    public void setProgressList(List<Progress> progressList) {
-        this.progressList = progressList;
-    }
+    // Progress tracking
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Progress> progress;
 }
