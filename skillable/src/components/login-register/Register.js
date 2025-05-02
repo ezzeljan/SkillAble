@@ -9,18 +9,18 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff"
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import Snackbar from "@mui/material/Snackbar"
 import Alert from "@mui/material/Alert"
+import { Link as RouterLink } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
-import { IconButton, InputAdornment } from "@mui/material"
+import { IconButton, InputAdornment, Divider } from "@mui/material"
 import Navbar from "../Navbar"
 import "./Login.css"
 import Background from "../Background"
-import ToggleButton from "../Togglebutton";
 
 function Register() {
   const [emailError, setEmailError] = useState("")
   const [passwordError, setPasswordError] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
-  const [showPassword, setShowPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [successMessage, setSuccessMessage] = useState("")
@@ -41,7 +41,6 @@ function Register() {
     const password = data.get("password")
     const confirmPassword = data.get("confirmpassword"); 
 
-
     let isValid = true
 
     // Validations
@@ -58,52 +57,50 @@ function Register() {
     } else {
       setPasswordError("")
     }
+    
     if (password !== confirmPassword) {
-        setConfirmPasswordError("Passwords do not match!");
-        isValid = false;
+      setConfirmPasswordError("Passwords do not match!");
+      isValid = false;
     } else {
-        setConfirmPasswordError("");
+      setConfirmPasswordError("");
     }
 
     if (!isValid) {
       return
     }
 
-    const user = {
+    // Create registration request body
+    const registerRequest = {
       email: email,
       password: password,
+      userType: "STUDENT" // Set default role or get from form
     }
 
     try {
-      const response = await fetch("http://localhost:8080/user/login", {
+      // Call your Spring Boot register endpoint
+      const response = await fetch("http://localhost:8080/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(user),
+        body: JSON.stringify(registerRequest),
       })
 
+      const result = await response.text() // Get response as text since your endpoint returns ResponseEntity<String>
+
       if (!response.ok) {
-        throw new Error("Invalid email or password")
+        throw new Error(result || "Registration failed")
       }
 
-      const result = await response.json()
-      console.log(result)
-
-      // Check if result contains a userId (or similar identifier)
-      if (result.userId) {
-        // Save userId and other necessary info to localStorage
-        localStorage.setItem("userId", result.userId) // Store the userId in localStorage
-        localStorage.setItem("user", JSON.stringify(result)) // Store the full user data if needed
-
-        setSuccessMessage("Login successful!")
-        setOpenSnackbar(true)
-        setTimeout(() => navigate("/homepage"), 1500)
-      } else {
-        throw new Error("User ID not found in the response")
-      }
+      // Registration successful
+      setSuccessMessage("Registration successful! Redirecting to login...")
+      setOpenSnackbar(true)
+      
+      // Redirect to login page after short delay
+      setTimeout(() => navigate("/login"), 1500)
+      
     } catch (err) {
-      setErrorMessage(err.message) // Set error message if login fails
+      setErrorMessage(err.message)
       setOpenSnackbar(true)
     }
   }
@@ -121,13 +118,13 @@ function Register() {
       style={{
         position: "relative",
         overflow: "hidden",
-        minHeight: "100vh", // Ensure it covers full viewport height
+        minHeight: "100vh", 
         width: "100%",
       }}
     >
       <div
         style={{
-          position: "fixed", // Change from absolute to fixed
+          position: "fixed",
           top: 0,
           left: 0,
           right: 0,
@@ -147,7 +144,7 @@ function Register() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            minHeight: "90vh", // Change from height to minHeight
+            minHeight: "90vh",
             paddingBottom: "100px",
           }}
         >
@@ -163,12 +160,9 @@ function Register() {
               padding: "30px",
               borderRadius: "20px",
               boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
-              position: "relative", // Make sure the box has relative positioning for the toggle
+              position: "relative",
             }}
           >
-            <ToggleButton isLoginPage={true} />
-
-
             <Typography
               component="h1"
               variant="h5"
@@ -181,7 +175,7 @@ function Register() {
               <TextField
                 margin="normal"
                 required
-                fullWidth={false} // Disable fullWidth to allow custom width
+                fullWidth={false}
                 id="email"
                 label="Email"
                 name="email"
@@ -200,7 +194,7 @@ function Register() {
               <TextField
                 margin="normal"
                 required
-                fullWidth={false} // Disable fullWidth to allow custom width
+                fullWidth={false}
                 name="password"
                 label="Password"
                 type={showPassword ? "text" : "password"}
@@ -237,26 +231,26 @@ function Register() {
                 error={!!confirmPasswordError}
                 helperText={confirmPasswordError}
                 sx={{
-                    width: 380,
-                    "& .MuiOutlinedInput-root": {
-                      height: 65,
-                      borderRadius: "15px",
-                    },
-                  }}
-                    InputProps={{
-                        endAdornment: (
-                             <InputAdornment position="end">
-                                <IconButton
-                                    onClick={handleClickShowConfirmPassword}
-                                    onMouseDown={handleMouseDownPassword}
-                                    edge="end"
-                                        >
-                                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
+                  width: 380,
+                  "& .MuiOutlinedInput-root": {
+                    height: 65,
+                    borderRadius: "15px",
+                  },
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleClickShowConfirmPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
 
               {errorMessage && (
                 <Typography variant="body2" color="error">
@@ -271,6 +265,25 @@ function Register() {
                   Sign up
                 </button>
               </Grid>
+              
+              {/* Added login link section */}
+              <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Divider sx={{ width: '100%', my: 2 }} />
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  Already have an account?
+                </Typography>
+                <RouterLink 
+                  to="/login" 
+                  style={{ 
+                    textDecoration: "none",
+                    color: "#4a6cf7",
+                    fontWeight: "600",
+                    fontSize: "16px"
+                  }}
+                >
+                  Log in here
+                </RouterLink>
+              </Box>
             </Box>
           </Box>
         </Container>

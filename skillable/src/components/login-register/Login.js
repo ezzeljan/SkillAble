@@ -11,20 +11,18 @@ import Snackbar from "@mui/material/Snackbar"
 import Alert from "@mui/material/Alert"
 import { Link as RouterLink } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
-import { IconButton, InputAdornment } from "@mui/material"
+import { IconButton, InputAdornment, Divider } from "@mui/material"
 import Navbar from "../Navbar"
 import "./Login.css"
 import Background from "../Background"
-import ToggleButton from "../Togglebutton";
 
 function Login() {
   const [emailError, setEmailError] = useState("")
   const [passwordError, setPasswordError] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
-  const [showPassword, setShowPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [successMessage, setSuccessMessage] = useState("")
   const [openSnackbar, setOpenSnackbar] = useState(false)
-  //const [isToggled, setIsToggled] = useState(false) // State for the toggle button
   const navigate = useNavigate()
 
   const handleClickShowPassword = () => {
@@ -62,41 +60,44 @@ function Login() {
       return
     }
 
-    const user = {
+    // Create login request object to match your LoginRequest DTO
+    const loginRequest = {
       email: email,
       password: password,
     }
 
     try {
-      const response = await fetch("http://localhost:8080/user/login", {
+      console.log("Sending login request:", loginRequest);
+      
+      // Updated to use your Spring Boot login endpoint
+      const response = await fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(user),
+        body: JSON.stringify(loginRequest),
       })
 
+      console.log("Response status:", response.status);
+      
+      const result = await response.text();
+      console.log("Response body:", result);
+
       if (!response.ok) {
-        throw new Error("Invalid email or password")
+        throw new Error(result || "Invalid email or password");
       }
 
-      const result = await response.json()
-      console.log(result)
+      // If your backend returns a token, store it
+      localStorage.setItem("token", result); 
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("isLoggedIn", "true");
 
-      // Check if result contains a userId (or similar identifier)
-      if (result.userId) {
-        // Save userId and other necessary info to localStorage
-        localStorage.setItem("userId", result.userId) // Store the userId in localStorage
-        localStorage.setItem("user", JSON.stringify(result)) // Store the full user data if needed
-
-        setSuccessMessage("Login successful!")
-        setOpenSnackbar(true)
-        setTimeout(() => navigate("/homepage"), 1500)
-      } else {
-        throw new Error("User ID not found in the response")
-      }
+      setSuccessMessage("Login successful!")
+      setOpenSnackbar(true)
+      setTimeout(() => navigate("/homepage"), 1500)
     } catch (err) {
-      setErrorMessage(err.message) // Set error message if login fails
+      console.error("Login error:", err);
+      setErrorMessage(err.message || "Login failed") 
       setOpenSnackbar(true)
     }
   }
@@ -107,15 +108,6 @@ function Login() {
     }
     setOpenSnackbar(false)
   }
-  // Handle the toggle change to navigate based on position
-  /*const handleToggleChange = () => {
-    setIsToggled(!isToggled);
-    if (!isToggled) {
-      navigate("/login"); // Navigate to /login when toggle is on the left (Login)
-    } else {
-      navigate("/register"); // Navigate to /register when toggle is on the right (Signup)
-    }
-  };*/
 
   return (
     <div
@@ -123,13 +115,13 @@ function Login() {
       style={{
         position: "relative",
         overflow: "hidden",
-        minHeight: "100vh", // Ensure it covers full viewport height
+        minHeight: "100vh",
         width: "100%",
       }}
     >
       <div
         style={{
-          position: "fixed", // Change from absolute to fixed
+          position: "fixed",
           top: 0,
           left: 0,
           right: 0,
@@ -149,7 +141,7 @@ function Login() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            minHeight: "90vh", // Change from height to minHeight
+            minHeight: "90vh",
             paddingBottom: "100px",
           }}
         >
@@ -165,10 +157,9 @@ function Login() {
               padding: "30px",
               borderRadius: "20px",
               boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
-              position: "relative", // Make sure the box has relative positioning for the toggle
+              position: "relative",
             }}
           >
-            <ToggleButton isLoginPage={false} />
             <Typography
               component="h1"
               variant="h5"
@@ -181,7 +172,7 @@ function Login() {
               <TextField
                 margin="normal"
                 required
-                fullWidth={false} // Disable fullWidth to allow custom width
+                fullWidth={false}
                 id="email"
                 label="Email"
                 name="email"
@@ -200,7 +191,7 @@ function Login() {
               <TextField
                 margin="normal"
                 required
-                fullWidth={false} // Disable fullWidth to allow custom width
+                fullWidth={false}
                 name="password"
                 label="Password"
                 type={showPassword ? "text" : "password"}
@@ -234,7 +225,7 @@ function Login() {
 
               <Grid container justifyContent="flex-end" sx={{ pt: 0, pb: 3 }}>
                 <Grid item>
-                  <RouterLink to="/register" variant="body2" style={{ textDecoration: "none" }}>
+                  <RouterLink to="/forgot-password" variant="body2" style={{ textDecoration: "none" }}>
                     {"Forgot Password?"}
                   </RouterLink>
                 </Grid>
@@ -245,6 +236,24 @@ function Login() {
                   Log in
                 </button>
               </Grid>
+              
+              <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Divider sx={{ width: '100%', my: 2 }} />
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  Don't have an account?
+                </Typography>
+                <RouterLink 
+                  to="/register" 
+                  style={{ 
+                    textDecoration: "none",
+                    color: "#4a6cf7",
+                    fontWeight: "600",
+                    fontSize: "16px"
+                  }}
+                >
+                  Sign up here
+                </RouterLink>
+              </Box>
             </Box>
           </Box>
         </Container>
@@ -266,7 +275,7 @@ function Login() {
         </Snackbar>
       </div>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;
