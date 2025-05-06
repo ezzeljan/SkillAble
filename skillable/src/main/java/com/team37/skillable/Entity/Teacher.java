@@ -12,8 +12,6 @@ import lombok.Setter;
 @Setter
 @Table(name = "teacher")
 public class Teacher extends UserEntity {
-    // Remove the @Id and @GeneratedValue here
-
     private String name;
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
