@@ -12,6 +12,7 @@ import {
   Snackbar,
   Alert
 } from "@mui/material";
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import Navbar from "./Navbar";
 import Background from "./Background";
 
@@ -355,6 +356,34 @@ function Homepage() {
                     You are logged in as a teacher. You can now manage your courses, view your students, and create new content.
                   </Typography>
                   {/* Add teacher dashboard content here */}
+                </Box>
+              )}
+              
+              {/* Admin section */}
+              {localStorage.getItem('isAdmin') === 'true' && (
+                <Box sx={{ mt: 4, p: 3, bgcolor: '#f8f9fa', borderRadius: '10px', border: '1px solid #e9ecef' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <AdminPanelSettingsIcon sx={{ color: '#4a6cf7', mr: 1, fontSize: 28 }} />
+                    <Typography variant="h6" color="#4a6cf7">
+                      Admin Access
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ mb: 3 }}>
+                    As an administrator, you can manage users, promote teachers, and configure system settings.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    onClick={() => navigate("/admin")}
+                    sx={{ 
+                      borderRadius: "10px",
+                      backgroundColor: "#4a6cf7",
+                      "&:hover": {
+                        backgroundColor: "#3a5ce5"
+                      }
+                    }}
+                  >
+                    Go to Admin Dashboard
+                  </Button>
                 </Box>
               )}
             </Paper>

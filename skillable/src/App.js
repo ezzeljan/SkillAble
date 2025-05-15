@@ -6,17 +6,26 @@ import Register from './components/login-register/Register';
 import LandingPage from './components/LandingPage';
 import Homepage from './components/Homepage';
 import AccountPage from './components/AccountPage';
-
+import AdminDashboard from './components/admin/AdminDashboard';
+import AdminRoute from './components/admin/AdminRoute';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage/>} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register/>} />
-        <Route path="/homepage" element={<Homepage/>} />
-        <Route path="/account" element={<AccountPage/>} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/homepage" element={<Homepage />} />
+        <Route path="/account" element={<AccountPage />} />
+        <Route 
+          path="/admin/*" 
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          } 
+        />
       </Routes>
     </Router>
   );

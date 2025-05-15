@@ -94,13 +94,43 @@ function Login() {
 
       setSuccessMessage("Login successful!")
       setOpenSnackbar(true)
-      setTimeout(() => navigate("/homepage"), 1500)
+      
+      // Check if user is admin and redirect accordingly
+      const isAdmin = await checkAdminAccess(email);
+      if (isAdmin) {
+        localStorage.setItem("isAdmin", "true");
+        setTimeout(() => navigate("/admin"), 1500);
+      } else {
+        localStorage.setItem("isAdmin", "false");
+        setTimeout(() => navigate("/homepage"), 1500);
+      }
     } catch (err) {
       console.error("Login error:", err);
       setErrorMessage(err.message || "Login failed") 
       setOpenSnackbar(true)
     }
   }
+
+  const checkAdminAccess = async (email) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`http://localhost:8080/api/admin/check?email=${encodeURIComponent(email)}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      return false;
+    }
+  };
 
   const handleCloseSnackbar = (event, reason) => {
     if (reason === "clickaway") {
